@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  # This is your Django web application
+  web:
+    # Build from the Dockerfile we just created
+    build: ./server
+    # Map port 8080 in container to port 8000 on your Mac
+    ports:
+      - "8080:8000"
+    # Mount your code so changes appear immediately (no need to rebuild)
+    volumes:
+      - ./server:/app
+      # Keep media files persistent
+      - media_data:/app/media
+    # Environment variables for Django
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=your-secret-key-here
+      - DATABASE_URL=postgresql://podcast_owner:npg_iUboQ7nDmO5L@ep-shiny-bread-a40dz8jb-pooler.us-east-1.aws.neon.tech/podcast?sslmode=require&channel_binding=require
+    # Start this service when you run docker-compose up
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver"
+
+# Named volumes to keep data persistent
+volumes:
+  media_data:
