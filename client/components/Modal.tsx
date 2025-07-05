@@ -45,30 +45,33 @@ export default function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Modal Content */}
       <div
-        className={`relative bg-white rounded-lg shadow-xl max-h-[90vh] overflow-hidden w-full max-w-md animate-in fade-in-0 zoom-in-95 duration-200 ${className}`}
+        className={`relative bg-card/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl shadow-purple-500/20 max-h-[90vh] overflow-hidden w-full max-w-md animate-in fade-in-0 zoom-in-95 duration-200 ${className}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
         aria-describedby={description ? "modal-description" : undefined}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
             <h2
               id="modal-title"
-              className="text-lg font-semibold text-gray-900"
+              className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
             >
               {title}
             </h2>
             {description && (
-              <p id="modal-description" className="text-sm text-gray-600 mt-1">
+              <p
+                id="modal-description"
+                className="text-sm text-muted-foreground mt-1"
+              >
                 {description}
               </p>
             )}
@@ -77,7 +80,7 @@ export default function Modal({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-900"
+            className="text-muted-foreground hover:text-foreground hover:bg-white/10"
             aria-label="Close modal"
           >
             <X className="h-5 w-5" />
@@ -85,7 +88,7 @@ export default function Modal({
         </div>
 
         {/* Content */}
-        <div className="max-h-[60vh] overflow-y-auto">{children}</div>
+        <div className="max-h-[60vh] overflow-y-auto p-6">{children}</div>
       </div>
     </div>
   );

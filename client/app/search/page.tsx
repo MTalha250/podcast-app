@@ -157,13 +157,13 @@ export default function SearchPage() {
     if (!searchQuery.trim()) {
       return (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Search className="h-12 w-12 text-gray-400" />
+          <div className="w-24 h-24 bg-card/50 border-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Search className="h-12 w-12 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+          <h2 className="text-2xl font-semibold text-foreground mb-4">
             Search for podcasts and episodes
           </h2>
-          <p className="text-gray-600 mb-8">
+          <p className="text-muted-foreground mb-8">
             Discover your next favorite podcast or find specific episodes
           </p>
 
@@ -171,14 +171,14 @@ export default function SearchPage() {
           {recentSearches.length > 0 && (
             <div className="max-w-md mx-auto">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-900">
+                <h3 className="text-sm font-medium text-foreground">
                   Recent Searches
                 </h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearRecentSearches}
-                  className="text-xs text-gray-500 hover:text-gray-700"
+                  className="text-xs text-muted-foreground hover:text-foreground"
                 >
                   Clear all
                 </Button>
@@ -188,9 +188,9 @@ export default function SearchPage() {
                   <button
                     key={index}
                     onClick={() => handleRecentSearchClick(query)}
-                    className="flex items-center space-x-2 w-full p-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded"
+                    className="flex items-center space-x-2 w-full p-2 text-left text-sm text-muted-foreground hover:bg-card/50 hover:text-foreground rounded transition-all duration-200"
                   >
-                    <Clock className="h-4 w-4 text-gray-400" />
+                    <Clock className="h-4 w-4" />
                     <span>{query}</span>
                   </button>
                 ))}
@@ -203,26 +203,19 @@ export default function SearchPage() {
 
     if (loading.search) {
       return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-2">Searching...</p>
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(9)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-card/50 border-white/10 rounded-lg p-6 animate-pulse"
+              >
+                <div className="w-full h-48 bg-white/5 rounded-lg mb-4"></div>
+                <div className="h-4 bg-white/10 rounded mb-2"></div>
+                <div className="h-3 bg-white/5 rounded w-2/3"></div>
+              </div>
+            ))}
           </div>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="h-8 w-8 text-red-600" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Search Error
-          </h3>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={() => performSearch(searchQuery)}>Try Again</Button>
         </div>
       );
     }
@@ -230,46 +223,32 @@ export default function SearchPage() {
     if (!filteredResults || totalResults === 0) {
       return (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="h-8 w-8 text-gray-400" />
+          <div className="w-16 h-16 bg-card/50 border-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             No results found
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Try adjusting your search terms or filters
+          </h2>
+          <p className="text-muted-foreground">
+            Try adjusting your search or browse by category
           </p>
-          <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-            Clear Filters
-          </Button>
         </div>
       );
     }
 
     return (
       <div className="space-y-8">
-        {/* Results Summary */}
+        {/* Results Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Search Results for "{searchQuery}"
-            </h2>
-            <p className="text-gray-600 mt-1">
-              {totalResults} result{totalResults !== 1 ? "s" : ""} found
-              {selectedCategory && (
-                <span>
-                  {" "}
-                  in{" "}
-                  {categories.find((cat) => cat.id === selectedCategory)?.name}
-                </span>
-              )}
-            </p>
-          </div>
-
+          <h2 className="text-xl font-semibold text-foreground">
+            {totalResults} result{totalResults !== 1 ? "s" : ""} for "
+            {searchQuery}"
+          </h2>
           <Button
-            variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-2"
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground flex items-center space-x-2"
           >
             <Filter className="h-4 w-4" />
             <span>Filters</span>
@@ -278,129 +257,160 @@ export default function SearchPage() {
 
         {/* Filters */}
         {showFilters && (
-          <div className="bg-white p-4 rounded-lg border">
-            <h3 className="font-medium text-gray-900 mb-3">
-              Filter by Category
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={selectedCategory === null ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(null)}
-              >
-                All Categories
-              </Button>
-              {categories.map((category) => (
+          <div className="bg-card/50 border-white/10 rounded-lg p-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Category
+              </label>
+              <div className="flex flex-wrap gap-2">
                 <Button
-                  key={category.id}
-                  variant={
-                    selectedCategory === category.id ? "default" : "outline"
-                  }
+                  variant={selectedCategory === null ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(null)}
                   size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
+                  className={
+                    selectedCategory === null
+                      ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/30"
+                      : "bg-card/50 border-white/20 text-muted-foreground hover:bg-card/80 hover:text-foreground hover:border-white/40"
+                  }
                 >
-                  {category.name}
+                  All
                 </Button>
-              ))}
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={
+                      selectedCategory === category.id ? "default" : "outline"
+                    }
+                    onClick={() => setSelectedCategory(category.id)}
+                    size="sm"
+                    className={
+                      selectedCategory === category.id
+                        ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/30"
+                        : "bg-card/50 border-white/20 text-muted-foreground hover:bg-card/80 hover:text-foreground hover:border-white/40"
+                    }
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1 w-fit">
+        {/* Content Tabs */}
+        <div className="flex items-center space-x-1 bg-card/30 rounded-lg p-1 w-fit">
           <Button
             variant={activeTab === "all" ? "default" : "ghost"}
-            size="sm"
             onClick={() => setActiveTab("all")}
-            className="text-sm"
+            size="sm"
+            className={
+              activeTab === "all"
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+            }
           >
             All ({totalResults})
           </Button>
           <Button
             variant={activeTab === "podcasts" ? "default" : "ghost"}
-            size="sm"
             onClick={() => setActiveTab("podcasts")}
-            className="text-sm"
+            size="sm"
+            className={
+              activeTab === "podcasts"
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+            }
           >
             Podcasts ({filteredResults.podcasts.length})
           </Button>
           <Button
             variant={activeTab === "episodes" ? "default" : "ghost"}
-            size="sm"
             onClick={() => setActiveTab("episodes")}
-            className="text-sm"
+            size="sm"
+            className={
+              activeTab === "episodes"
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+            }
           >
             Episodes ({filteredResults.episodes.length})
           </Button>
         </div>
 
         {/* Results */}
-        {(activeTab === "all" || activeTab === "podcasts") &&
-          filteredResults.podcasts.length > 0 && (
-            <section>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Podcasts ({filteredResults.podcasts.length})
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredResults.podcasts.map((podcast) => (
-                  <PodcastCard
-                    key={podcast.id}
-                    podcast={podcast}
-                    showSubscribeButton={true}
-                  />
-                ))}
+        <div className="space-y-8">
+          {/* Podcasts Section */}
+          {(activeTab === "all" || activeTab === "podcasts") &&
+            filteredResults.podcasts.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Podcasts
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredResults.podcasts.map((podcast) => (
+                    <PodcastCard key={podcast.id} podcast={podcast} />
+                  ))}
+                </div>
               </div>
-            </section>
-          )}
+            )}
 
-        {(activeTab === "all" || activeTab === "episodes") &&
-          filteredResults.episodes.length > 0 && (
-            <section>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Episodes ({filteredResults.episodes.length})
-              </h3>
-              <div className="space-y-4">
-                {filteredResults.episodes.map((episode) => (
-                  <EpisodeCard
-                    key={episode.id}
-                    episode={episode}
-                    showPodcastInfo={true}
-                  />
-                ))}
+          {/* Episodes Section */}
+          {(activeTab === "all" || activeTab === "episodes") &&
+            filteredResults.episodes.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Episodes
+                </h3>
+                <div className="space-y-4">
+                  {filteredResults.episodes.map((episode) => (
+                    <EpisodeCard key={episode.id} episode={episode} />
+                  ))}
+                </div>
               </div>
-            </section>
-          )}
+            )}
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Header */}
+        {/* Header */}
         <div className="mb-8">
-          <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+            Search
+          </h1>
+          <p className="text-muted-foreground">
+            Find your next favorite podcast or episode
+          </p>
+        </div>
+
+        {/* Search Form */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <form onSubmit={handleSearchSubmit} className="relative">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search podcasts, episodes, creators..."
+                placeholder="Search podcasts and episodes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-12 py-3 text-lg"
-                autoFocus
+                className="pl-10 pr-4 py-3 text-lg bg-card/50 border-white/20 text-foreground placeholder:text-muted-foreground focus:border-purple-500 focus:ring-purple-500/20 transition-all duration-300"
               />
               {searchQuery && (
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     setSearchQuery("");
                     setSearchResults(null);
                   }}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  <X className="h-5 w-5" />
-                </button>
+                  <X className="h-4 w-4" />
+                </Button>
               )}
             </div>
           </form>

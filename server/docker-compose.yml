@@ -1,28 +1,22 @@
 version: "3.8"
 
 services:
-  # This is your Django web application
-  web:
-    # Build from the Dockerfile we just created
-    build: ./server
-    # Map port 8080 in container to port 8000 on your Mac
+  db:
+    image: postgres:15-alpine
+    container_name: podcast_db
     ports:
-      - "8080:8000"
-    # Mount your code so changes appear immediately (no need to rebuild)
-    volumes:
-      - ./server:/app
-      # Keep media files persistent
-      - media_data:/app/media
-    # Environment variables for Django
+      - "5432:5432"
     environment:
-      - DEBUG=1
-      - SECRET_KEY=your-secret-key-here
-      - DATABASE_URL=postgresql://podcast_owner:npg_iUboQ7nDmO5L@ep-shiny-bread-a40dz8jb-pooler.us-east-1.aws.neon.tech/podcast?sslmode=require&channel_binding=require
-    # Start this service when you run docker-compose up
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver"
+      - POSTGRES_DB=podcast
+      - POSTGRES_USER=podcast_user
+      - POSTGRES_PASSWORD=podcast_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U podcast_user -d podcast"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# Named volumes to keep data persistent
 volumes:
-  media_data:
+  postgres_data:

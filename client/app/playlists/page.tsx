@@ -12,6 +12,7 @@ import {
   Clock,
   Calendar,
   MoreVertical,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -250,392 +251,373 @@ export default function PlaylistsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Playlists</h1>
-            <p className="text-gray-600 mt-1">
-              Create and manage your podcast playlists
-            </p>
-          </div>
-
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center space-x-2"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Create Playlist</span>
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+            My Playlists
+          </h1>
+          <p className="text-muted-foreground">
+            {playlists.length > 0
+              ? `You have ${playlists.length} playlist${
+                  playlists.length !== 1 ? "s" : ""
+                }`
+              : "Create your first playlist to organize your favorite episodes"}
+          </p>
         </div>
 
-        {loading.playlists ? (
-          /* Loading State */
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-lg p-4 animate-pulse"
-                  >
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg p-6 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded mb-4"></div>
-                <div className="space-y-4">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-16 bg-gray-200 rounded"></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Playlists List */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm">
-                <div className="p-4 border-b border-gray-200">
-                  <h2 className="font-semibold text-gray-900">
-                    Playlists ({playlists.length})
-                  </h2>
-                </div>
-
-                {playlists.length === 0 ? (
-                  <div className="p-8 text-center">
-                    <Music className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      No playlists yet
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      Create your first playlist to organize your favorite
-                      episodes
-                    </p>
-                    <Button
-                      onClick={() => setShowCreateModal(true)}
-                      className="flex items-center space-x-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span>Create Playlist</span>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-gray-200">
-                    {playlists.map((playlist) => (
-                      <div
-                        key={playlist.id}
-                        className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                          selectedPlaylist?.id === playlist.id
-                            ? "bg-blue-50"
-                            : ""
-                        }`}
-                        onClick={() => setSelectedPlaylist(playlist)}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 truncate">
-                              {playlist.name}
-                            </h3>
-                            <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
-                              <div className="flex items-center space-x-1">
-                                <Music className="h-3 w-3" />
-                                <span>{playlist.episode_count} episodes</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Clock className="h-3 w-3" />
-                                <span>
-                                  {formatDuration(getTotalDuration(playlist))}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-1 mt-1 text-xs text-gray-500">
-                              <Calendar className="h-3 w-3" />
-                              <span>
-                                Created {formatDate(playlist.created_at)}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="relative">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowPlaylistMenu(
-                                  showPlaylistMenu === playlist.id
-                                    ? null
-                                    : playlist.id
-                                );
-                              }}
-                              className="h-8 w-8"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-
-                            {showPlaylistMenu === playlist.id && (
-                              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[120px]">
-                                <div className="py-1">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      openEditModal(playlist);
-                                    }}
-                                    className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                  >
-                                    <Edit3 className="h-3 w-3" />
-                                    <span>Edit</span>
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      openDeleteModal(playlist);
-                                    }}
-                                    className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50"
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                    <span>Delete</span>
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Playlist Details */}
-            <div className="lg:col-span-2">
-              {selectedPlaylist ? (
-                <div className="bg-white rounded-lg shadow-sm">
-                  {/* Playlist Header */}
-                  <div className="p-6 border-b border-gray-200">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                          {selectedPlaylist.name}
-                        </h2>
-                        <div className="flex items-center space-x-6 text-sm text-gray-600">
-                          <div className="flex items-center space-x-1">
-                            <Music className="h-4 w-4" />
-                            <span>
-                              {selectedPlaylist.episode_count} episodes
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>
-                              {formatDuration(
-                                getTotalDuration(selectedPlaylist)
-                              )}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>
-                              Created {formatDate(selectedPlaylist.created_at)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {selectedPlaylist.episodes &&
-                        selectedPlaylist.episodes.length > 0 && (
-                          <Button className="flex items-center space-x-2">
-                            <Play className="h-4 w-4" />
-                            <span>Play All</span>
-                          </Button>
-                        )}
-                    </div>
-                  </div>
-
-                  {/* Episodes */}
-                  <div className="p-6">
-                    {!selectedPlaylist.episodes ||
-                    selectedPlaylist.episodes.length === 0 ? (
-                      <div className="text-center py-8">
-                        <Music className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                          No episodes in this playlist
-                        </h3>
-                        <p className="text-gray-600">
-                          Add episodes to this playlist to start building your
-                          collection
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {selectedPlaylist.episodes.map((episode) => (
-                          <EpisodeCard
-                            key={episode.id}
-                            episode={episode}
-                            showPodcastInfo={true}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                  <Music className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">
-                    Select a playlist
-                  </h3>
-                  <p className="text-gray-600">
-                    Choose a playlist from the list to view its episodes
-                  </p>
-                </div>
-              )}
-            </div>
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg mb-6 backdrop-blur-sm">
+            {error}
           </div>
         )}
 
-        {/* Create Playlist Modal */}
-        <Modal
-          isOpen={showCreateModal}
-          onClose={() => {
-            setShowCreateModal(false);
-            setNewPlaylistName("");
-          }}
-          title="Create Playlist"
-          description="Enter a name for your new playlist"
-        >
-          <div className="p-6">
-            <form onSubmit={handleCreatePlaylist}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Playlist Name
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Enter playlist name"
-                  value={newPlaylistName}
-                  onChange={(e) => setNewPlaylistName(e.target.value)}
-                  required
-                  autoFocus
-                />
-              </div>
-
-              <div className="flex items-center space-x-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    setNewPlaylistName("");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={loading.creating || !newPlaylistName.trim()}
-                  className="flex-1"
-                >
-                  {loading.creating ? "Creating..." : "Create"}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </Modal>
-
-        {/* Edit Playlist Modal */}
-        <Modal
-          isOpen={showEditModal && !!playlistToEdit}
-          onClose={() => {
-            setShowEditModal(false);
-            setPlaylistToEdit(null);
-            setNewPlaylistName("");
-          }}
-          title="Edit Playlist"
-          description="Update the name of your playlist"
-        >
-          <div className="p-6">
-            <form onSubmit={handleEditPlaylist}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Playlist Name
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Enter playlist name"
-                  value={newPlaylistName}
-                  onChange={(e) => setNewPlaylistName(e.target.value)}
-                  required
-                  autoFocus
-                />
-              </div>
-
-              <div className="flex items-center space-x-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setPlaylistToEdit(null);
-                    setNewPlaylistName("");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={loading.updating || !newPlaylistName.trim()}
-                  className="flex-1"
-                >
-                  {loading.updating ? "Updating..." : "Update"}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </Modal>
-
-        {/* Delete Confirmation Modal */}
-        <Modal
-          isOpen={showDeleteModal && !!playlistToDelete}
-          onClose={() => {
-            setShowDeleteModal(false);
-            setPlaylistToDelete(null);
-          }}
-          title="Delete Playlist"
-          description={`Are you sure you want to delete "${playlistToDelete?.name}"? This action cannot be undone.`}
-        >
-          <div className="p-6">
-            <div className="flex items-center space-x-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setPlaylistToDelete(null);
-                }}
-                className="flex-1"
+        {/* Loading State */}
+        {loading.playlists ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-card/50 border-white/10 rounded-lg p-6 animate-pulse"
               >
-                Cancel
-              </Button>
+                <div className="w-full h-48 bg-white/5 rounded-lg mb-4"></div>
+                <div className="h-4 bg-white/10 rounded mb-2"></div>
+                <div className="h-3 bg-white/5 rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        ) : playlists.length === 0 ? (
+          /* Empty State */
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-card/50 border-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Music className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
+              No playlists yet
+            </h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              Create your first playlist to organize your favorite episodes and
+              access them easily anytime.
+            </p>
+            <Button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/30 border-0 flex items-center space-x-2"
+            >
+              <Plus className="h-5 w-5" />
+              <span>Create Your First Playlist</span>
+            </Button>
+          </div>
+        ) : (
+          /* Content */
+          <div className="space-y-6">
+            {/* Create Playlist Button */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <h2 className="text-xl font-semibold text-foreground">
+                  {selectedPlaylist ? selectedPlaylist.name : "All Playlists"}
+                </h2>
+                {selectedPlaylist && (
+                  <Button
+                    onClick={() => setSelectedPlaylist(null)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to All Playlists
+                  </Button>
+                )}
+              </div>
               <Button
-                onClick={handleDeletePlaylist}
-                disabled={loading.deleting}
-                variant="destructive"
-                className="flex-1"
+                onClick={() => setShowCreateModal(true)}
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/30 border-0 flex items-center space-x-2"
               >
-                {loading.deleting ? "Deleting..." : "Delete"}
+                <Plus className="h-4 w-4" />
+                <span>New Playlist</span>
               </Button>
             </div>
+
+            {!selectedPlaylist ? (
+              /* Playlist Grid */
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {playlists.map((playlist) => (
+                  <div
+                    key={playlist.id}
+                    className="bg-card/50 border-white/10 rounded-lg p-6 hover:bg-card/80 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 group cursor-pointer"
+                    onClick={() => setSelectedPlaylist(playlist)}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-foreground group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-blue-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                          {playlist.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {playlist.episode_count} episode
+                          {playlist.episode_count !== 1 ? "s" : ""}
+                        </p>
+                      </div>
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowPlaylistMenu(
+                              showPlaylistMenu === playlist.id
+                                ? null
+                                : playlist.id
+                            );
+                          }}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                        {showPlaylistMenu === playlist.id && (
+                          <div className="absolute right-0 top-8 w-48 bg-card/90 backdrop-blur-xl border border-white/10 rounded-lg shadow-lg shadow-purple-500/20 z-10">
+                            <div className="py-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openEditModal(playlist);
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-white/5 flex items-center space-x-2"
+                              >
+                                <Edit3 className="h-4 w-4" />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDeleteModal(playlist);
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 flex items-center space-x-2"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span>Created {formatDate(playlist.created_at)}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4 mr-2" />
+                        <span>
+                          {formatDuration(getTotalDuration(playlist))}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedPlaylist(playlist);
+                        }}
+                        className="w-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 text-foreground border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300"
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        View Episodes
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Selected Playlist Episodes */
+              <div className="space-y-6">
+                <div className="bg-card/50 border-white/10 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {selectedPlaylist.name}
+                  </h3>
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                    <span>{selectedPlaylist.episode_count} episodes</span>
+                    <span>•</span>
+                    <span>
+                      Created {formatDate(selectedPlaylist.created_at)}
+                    </span>
+                    <span>•</span>
+                    <span>
+                      {formatDuration(getTotalDuration(selectedPlaylist))}
+                    </span>
+                  </div>
+                </div>
+
+                {selectedPlaylist.episodes &&
+                selectedPlaylist.episodes.length > 0 ? (
+                  <div className="space-y-4">
+                    {selectedPlaylist.episodes.map((episode) => (
+                      <EpisodeCard key={episode.id} episode={episode} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-card/50 border-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Music className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      No episodes yet
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Start adding episodes to this playlist to see them here.
+                    </p>
+                    <Button
+                      onClick={() => router.push("/discover")}
+                      className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/30 border-0"
+                    >
+                      Discover Episodes
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </Modal>
+        )}
       </div>
+
+      {/* Create Playlist Modal */}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => {
+          setShowCreateModal(false);
+          setNewPlaylistName("");
+        }}
+        title="Create New Playlist"
+      >
+        <form onSubmit={handleCreatePlaylist} className="space-y-4">
+          <div>
+            <label
+              htmlFor="playlistName"
+              className="block text-sm font-medium text-foreground mb-2"
+            >
+              Playlist Name
+            </label>
+            <Input
+              id="playlistName"
+              type="text"
+              value={newPlaylistName}
+              onChange={(e) => setNewPlaylistName(e.target.value)}
+              placeholder="Enter playlist name"
+              required
+              className="bg-card/50 border-white/20 text-foreground placeholder:text-muted-foreground focus:border-purple-500 focus:ring-purple-500/20 transition-all duration-300"
+            />
+          </div>
+          <div className="flex justify-end space-x-3">
+            <Button
+              type="button"
+              onClick={() => {
+                setShowCreateModal(false);
+                setNewPlaylistName("");
+              }}
+              className="bg-card/50 border-white/20 text-muted-foreground hover:bg-card/80 hover:text-foreground hover:border-white/40"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading.creating}
+              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/30 border-0"
+            >
+              {loading.creating ? "Creating..." : "Create Playlist"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Playlist Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setPlaylistToEdit(null);
+          setNewPlaylistName("");
+        }}
+        title="Edit Playlist"
+      >
+        <form onSubmit={handleEditPlaylist} className="space-y-4">
+          <div>
+            <label
+              htmlFor="editPlaylistName"
+              className="block text-sm font-medium text-foreground mb-2"
+            >
+              Playlist Name
+            </label>
+            <Input
+              id="editPlaylistName"
+              type="text"
+              value={newPlaylistName}
+              onChange={(e) => setNewPlaylistName(e.target.value)}
+              placeholder="Enter playlist name"
+              required
+              className="bg-card/50 border-white/20 text-foreground placeholder:text-muted-foreground focus:border-purple-500 focus:ring-purple-500/20 transition-all duration-300"
+            />
+          </div>
+          <div className="flex justify-end space-x-3">
+            <Button
+              type="button"
+              onClick={() => {
+                setShowEditModal(false);
+                setPlaylistToEdit(null);
+                setNewPlaylistName("");
+              }}
+              className="bg-card/50 border-white/20 text-muted-foreground hover:bg-card/80 hover:text-foreground hover:border-white/40"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading.updating}
+              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/30 border-0"
+            >
+              {loading.updating ? "Updating..." : "Update Playlist"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Playlist Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setPlaylistToDelete(null);
+        }}
+        title="Delete Playlist"
+      >
+        <div className="space-y-4">
+          <p className="text-muted-foreground">
+            Are you sure you want to delete "{playlistToDelete?.name}"? This
+            action cannot be undone.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              type="button"
+              onClick={() => {
+                setShowDeleteModal(false);
+                setPlaylistToDelete(null);
+              }}
+              className="bg-card/50 border-white/20 text-muted-foreground hover:bg-card/80 hover:text-foreground hover:border-white/40"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeletePlaylist}
+              disabled={loading.deleting}
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-red-500/30 border-0"
+            >
+              {loading.deleting ? "Deleting..." : "Delete Playlist"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

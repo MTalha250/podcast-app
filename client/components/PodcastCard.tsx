@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Heart, Play, Users } from "lucide-react";
+import { Heart, Play, Users, Star, Clock } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PodcastList, Podcast } from "@/types";
@@ -115,39 +115,28 @@ export default function PodcastCard({
 
   return (
     <Link href={`/podcasts/${podcast.id}`}>
-      <Card className="group hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
-        <CardContent className="p-4">
-          <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-gray-100">
-            {podcast.cover_image ? (
-              <img
-                src={process.env.NEXT_PUBLIC_IMAGE_URL + podcast.cover_image}
-                alt={podcast.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <Play className="h-12 w-12 text-gray-400" />
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors">
+      <Card className="bg-card/60 backdrop-blur-xl border border-white/10 rounded-xl hover:scale-105 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group">
+        <CardContent className="p-6">
+          <div className="space-y-3">
+            <h3 className="font-semibold text-lg leading-tight line-clamp-2 text-foreground group-hover:text-purple-400 transition-colors">
               {podcast.title}
             </h3>
 
-            <p className="text-sm text-gray-600">by {podcast.creator_name}</p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Users className="h-4 w-4" />
+              <span>by {podcast.creator_name}</span>
+            </div>
 
-            <div className="flex items-center justify-between text-xs text-gray-500">
-              <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                {podcast.category_name}
-              </span>
-              <span>{formatDate(podcast.created_at)}</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                <span>{formatDate(podcast.created_at)}</span>
+              </div>
             </div>
 
             {/* Description for full podcast objects */}
             {"description" in podcast && (
-              <p className="text-sm text-gray-600 line-clamp-3 mt-2">
+              <p className="text-sm text-muted-foreground line-clamp-3 mt-3">
                 {podcast.description}
               </p>
             )}
@@ -155,11 +144,15 @@ export default function PodcastCard({
         </CardContent>
 
         {showSubscribeButton && (
-          <CardFooter className="p-4 pt-0">
+          <CardFooter className="p-6 pt-0">
             <Button
               variant={isSubscribed ? "secondary" : "default"}
               size="sm"
-              className="w-full"
+              className={`w-full transition-all duration-300 ${
+                isSubscribed
+                  ? "bg-secondary/50 hover:bg-secondary/70 text-secondary-foreground"
+                  : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 hover:scale-105"
+              }`}
               onClick={handleSubscribe}
               disabled={isSubscribing || loading}
             >
@@ -177,9 +170,13 @@ export default function PodcastCard({
               ) : (
                 <div className="flex items-center space-x-2">
                   <Heart
-                    className={`h-4 w-4 ${isSubscribed ? "fill-current" : ""}`}
+                    className={`h-4 w-4 transition-all duration-300 ${
+                      isSubscribed ? "fill-current text-red-400" : ""
+                    }`}
                   />
-                  <span>{isSubscribed ? "Subscribed" : "Subscribe"}</span>
+                  <span className="font-medium">
+                    {isSubscribed ? "Subscribed" : "Subscribe"}
+                  </span>
                 </div>
               )}
             </Button>
