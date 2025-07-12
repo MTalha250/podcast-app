@@ -93,7 +93,7 @@ export default function HomePage() {
                 <Play className="h-10 w-10 text-white" />
               </div>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="text-5xl font-bold mb-6">
               <span className="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
                 Discover Amazing
               </span>
@@ -102,7 +102,7 @@ export default function HomePage() {
                 Podcasts
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               Immerse yourself in captivating stories, insightful conversations,
               and cutting-edge knowledge from creators around the world.
             </p>
@@ -140,7 +140,7 @@ export default function HomePage() {
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-foreground">
+                  <h2 className="text-2xl font-bold text-foreground">
                     Trending Now
                   </h2>
                   <p className="text-muted-foreground">
@@ -160,7 +160,7 @@ export default function HomePage() {
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <Card
                     key={i}
@@ -175,7 +175,7 @@ export default function HomePage() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {trendingPodcasts.slice(0, 6).map((podcast) => (
                   <Link key={podcast.id} href={`/podcasts/${podcast.id}`}>
                     <Card className="bg-card/60 backdrop-blur-xl border border-white/10 rounded-xl hover:scale-105 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group">
@@ -200,7 +200,7 @@ export default function HomePage() {
                             <Play className="h-4 w-4 text-white" />
                           </div>
                         </div>
-                        <h3 className="font-semibold text-lg leading-tight line-clamp-2 text-foreground group-hover:text-purple-400 transition-colors mb-2">
+                        <h3 className="font-semibold text-lg truncate leading-tight line-clamp-2 text-foreground group-hover:text-purple-400 transition-colors mb-2">
                           {podcast.title}
                         </h3>
                         <p className="text-sm text-muted-foreground mb-3">
@@ -233,7 +233,7 @@ export default function HomePage() {
                   <Clock className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-foreground">
+                  <h2 className="text-2xl font-bold text-foreground">
                     Latest Episodes
                   </h2>
                   <p className="text-muted-foreground">
@@ -295,7 +295,7 @@ export default function HomePage() {
                   <Users className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-foreground">
+                  <h2 className="text-2xl font-bold text-foreground">
                     Browse Categories
                   </h2>
                   <p className="text-muted-foreground">
@@ -333,7 +333,7 @@ export default function HomePage() {
             <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/30">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-foreground mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               Ready to Start Your Journey?
             </h2>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">

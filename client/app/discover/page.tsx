@@ -159,7 +159,7 @@ export default function DiscoverPage() {
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <Card
                     key={i}
@@ -174,7 +174,7 @@ export default function DiscoverPage() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {featuredPodcasts.map((podcast) => (
                   <Link key={podcast.id} href={`/podcasts/${podcast.id}`}>
                     <Card className="bg-card/50 border-white/10 cursor-pointer hover:bg-card/80 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 group">
