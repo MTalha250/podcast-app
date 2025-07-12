@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Filter, X, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import EpisodeCard from "@/components/EpisodeCard";
 import { Category, SearchResult } from "@/types";
 import { searchAPI, categoriesAPI } from "@/lib/api";
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialQuery = searchParams.get("q") || "";
@@ -420,5 +420,38 @@ export default function SearchPage() {
         {showContent()}
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SearchPageLoading() {
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="h-8 bg-white/10 rounded w-48 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-white/5 rounded w-64 animate-pulse"></div>
+        </div>
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="h-12 bg-white/10 rounded-lg animate-pulse"></div>
+        </div>
+        <div className="text-center py-12">
+          <div className="w-24 h-24 bg-card/50 border-white/10 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+            <Search className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <div className="h-6 bg-white/10 rounded w-64 mx-auto mb-4 animate-pulse"></div>
+          <div className="h-4 bg-white/5 rounded w-80 mx-auto animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Default export with Suspense boundary
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageLoading />}>
+      <SearchPageContent />
+    </Suspense>
   );
 }
