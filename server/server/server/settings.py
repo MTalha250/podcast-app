@@ -24,12 +24,12 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j#89=h2ww8&&kwvq=hnc&5sssorps#n_m63(=j*1-&@mm&s+m)'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-j#89=h2ww8&&kwvq=hnc&5sssorps#n_m63(=j*1-&@mm&s+m)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '.vercel.app']
 
 
 # Application definition
@@ -194,4 +194,10 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://localhost:3000",
+]
+
+# Allow all Vercel domains during development
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
 ]
