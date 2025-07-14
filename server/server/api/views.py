@@ -332,10 +332,19 @@ def test_audio_upload(request):
         import cloudinary.uploader
         
         try:
+            # Determine resource type based on file extension
+            file_ext = audio_file.name.lower().split('.')[-1] if '.' in audio_file.name else ''
+            audio_extensions = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'wma']
+            
+            if file_ext in audio_extensions:
+                resource_type = "raw"  # Use raw for audio files
+            else:
+                resource_type = "auto"  # Let Cloudinary decide for other files
+            
             result = cloudinary.uploader.upload(
                 audio_file,
                 folder="episodes",
-                resource_type="auto",  # Let Cloudinary detect file type
+                resource_type=resource_type,
                 use_filename=True,
                 unique_filename=True,
                 overwrite=False
