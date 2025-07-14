@@ -116,27 +116,27 @@ export default function PodcastCard({
   return (
     <Link href={`/podcasts/${podcast.id}`}>
       <Card className="bg-card/60 backdrop-blur-xl border border-white/10 rounded-xl hover:scale-105 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="space-y-3">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 text-foreground group-hover:text-purple-400 transition-colors">
+            <h3 className="font-semibold text-base sm:text-lg leading-tight line-clamp-2 text-foreground group-hover:text-purple-400 transition-colors">
               {podcast.title}
             </h3>
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>by {podcast.creator_name}</span>
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">by {podcast.creator_name}</span>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="h-3 w-3" />
+                <Clock className="h-3 w-3 flex-shrink-0" />
                 <span>{formatDate(podcast.created_at)}</span>
               </div>
             </div>
 
             {/* Description for full podcast objects */}
             {"description" in podcast && (
-              <p className="text-sm text-muted-foreground line-clamp-3 mt-3">
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 mt-3">
                 {podcast.description}
               </p>
             )}
@@ -144,11 +144,11 @@ export default function PodcastCard({
         </CardContent>
 
         {showSubscribeButton && (
-          <CardFooter className="p-6 pt-0">
+          <CardFooter className="p-4 sm:p-6 pt-0">
             <Button
               variant={isSubscribed ? "secondary" : "default"}
               size="sm"
-              className={`w-full transition-all duration-300 ${
+              className={`w-full transition-all duration-300 h-9 sm:h-10 text-xs sm:text-sm ${
                 isSubscribed
                   ? "bg-secondary/50 hover:bg-secondary/70 text-secondary-foreground"
                   : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 hover:scale-105"
@@ -158,7 +158,7 @@ export default function PodcastCard({
             >
               {isSubscribing || loading ? (
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-current"></div>
                   <span>
                     {loading
                       ? "Checking..."
@@ -170,7 +170,7 @@ export default function PodcastCard({
               ) : (
                 <div className="flex items-center space-x-2">
                   <Heart
-                    className={`h-4 w-4 transition-all duration-300 ${
+                    className={`h-3 w-3 sm:h-4 sm:w-4 transition-all duration-300 ${
                       isSubscribed ? "fill-current text-red-400" : ""
                     }`}
                   />
