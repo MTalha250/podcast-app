@@ -26,11 +26,5 @@
       "src": "/(.*)",
       "dest": "server/wsgi.py"
     }
-  ],
-  "functions": {
-    "server/wsgi.py": {
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  }
+  ]
 }

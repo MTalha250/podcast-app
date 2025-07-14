@@ -8,8 +8,6 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-import cloudinary.uploader
-import cloudinary.utils
 
 from .models import Category, Podcast, Episode, Playlist, Subscription
 from .serializers import (
@@ -198,60 +196,6 @@ class EpisodeViewSet(viewsets.ModelViewSet):
         episodes = self.get_queryset()[:10]
         serializer = self.get_serializer(episodes, many=True)
         return Response(serializer.data)
-    
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
-    def create_with_uploaded_file(self, request):
-        """
-        Create an episode with a pre-uploaded file URL from Cloudinary.
-        This endpoint expects the file to already be uploaded to Cloudinary.
-        """
-        data = request.data.copy()
-        
-        # Validate required fields
-        required_fields = ['title', 'description', 'podcast', 'duration', 'audio_file_url']
-        for field in required_fields:
-            if not data.get(field):
-                return Response(
-                    {'error': f'{field} is required'}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        
-        try:
-            # Verify the podcast exists and user has permission
-            podcast = Podcast.objects.get(id=data['podcast'])
-            if not (request.user == podcast.creator or request.user.is_staff):
-                return Response(
-                    {'error': 'You do not have permission to add episodes to this podcast'}, 
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            
-            # Create episode with the uploaded file URL
-            episode = Episode.objects.create(
-                title=data['title'],
-                description=data['description'],
-                podcast=podcast,
-                duration=int(data['duration']),
-                audio_file=data['audio_file_url']  # This will be the Cloudinary URL
-            )
-            
-            serializer = EpisodeSerializer(episode)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-            
-        except Podcast.DoesNotExist:
-            return Response(
-                {'error': 'Podcast not found'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except ValueError as e:
-            return Response(
-                {'error': 'Invalid duration value'}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        except Exception as e:
-            return Response(
-                {'error': 'Failed to create episode'}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
 
 
 class PlaylistViewSet(viewsets.ModelViewSet):
@@ -359,61 +303,3 @@ def user_stats(request):
     }
     
     return Response(stats)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def get_upload_signature(request):
-    """
-    Generate a signed upload URL for direct Cloudinary upload.
-    This bypasses the Django server for large file uploads.
-    """
-    file_type = request.data.get('file_type', 'auto')
-    resource_type = request.data.get('resource_type', 'auto')
-    
-    # Set resource type based on file type
-    if file_type == 'audio':
-        resource_type = 'video'  # Cloudinary uses 'video' for audio files
-        allowed_formats = ['mp3', 'wav', 'ogg', 'm4a', 'aac']
-    elif file_type == 'image':
-        resource_type = 'image'
-        allowed_formats = ['jpg', 'jpeg', 'png', 'gif', 'webp']
-    else:
-        resource_type = 'auto'
-        allowed_formats = None
-    
-    # Generate upload parameters
-    upload_params = {
-        'resource_type': resource_type,
-        'folder': 'episodes' if file_type == 'audio' else 'podcasts',
-        'use_filename': True,
-        'unique_filename': True,
-        'overwrite': False,
-    }
-    
-    if allowed_formats:
-        upload_params['allowed_formats'] = allowed_formats
-    
-    # Generate signature
-    signature_data = cloudinary.utils.api_sign_request(
-        upload_params, 
-        cloudinary.config().api_secret
-    )
-    
-    # Return upload URL and signature
-    return Response({
-        'signature': signature_data['signature'],
-        'timestamp': signature_data['timestamp'],
-        'api_key': cloudinary.config().api_key,
-        'cloud_name': cloudinary.config().cloud_name,
-        'upload_url': f"https://api.cloudinary.com/v1_1/{cloudinary.config().cloud_name}/{resource_type}/upload",
-        'upload_params': upload_params
-    })
-
-
-def upload_page(request):
-    """
-    Serve the direct upload page for large audio files.
-    """
-    from django.shortcuts import render
-    return render(request, 'upload.html')

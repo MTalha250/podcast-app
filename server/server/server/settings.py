@@ -145,17 +145,14 @@ cloudinary.config(
     secure=True  # Use https
 )
 
-# File Upload Settings
-# Set file upload limits
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-FILE_UPLOAD_PERMISSIONS = 0o644
-
 # Media files (User uploads)
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    'STATICFILES_MANIFEST_ROOT': os.path.join(BASE_DIR, 'staticfiles'),
+    'STATIC_TAG': True,
+    'INVALIDATE': True,
 }
 
 # Django 4.2+ STORAGES setting
@@ -175,6 +172,14 @@ else:
     # Use local storage in development
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+
+# File upload settings
+# Maximum size for file uploads (10MB to handle audio files)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
+# Maximum request size for all data combined
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
