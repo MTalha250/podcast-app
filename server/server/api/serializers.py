@@ -36,27 +36,29 @@ class PodcastSerializer(serializers.ModelSerializer):
 class EpisodeSerializer(serializers.ModelSerializer):
     
     podcast_title = serializers.CharField(source='podcast.title', read_only=True)
-    audio_file_url = serializers.ReadOnlyField(source='audio_file_url')
     
     class Meta:
         model = Episode
         fields = [
-            'id', 'title', 'description', 'audio_file', 'audio_file_url',
+            'id', 'title', 'description', 'audio_file',
             'podcast', 'podcast_title', 'duration', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at', 'audio_file_url']
+        read_only_fields = ['id', 'created_at']
     
     def to_representation(self, instance):
         """Override representation to use correct audio URL"""
         ret = super().to_representation(instance)
         try:
-            # Replace audio_file with the correct URL if available
+            # Add audio_file_url and replace audio_file with the correct URL if available
             audio_url = instance.audio_file_url
             if audio_url:
+                ret['audio_file_url'] = audio_url
                 ret['audio_file'] = audio_url
+            else:
+                ret['audio_file_url'] = None
         except Exception:
-            # If getting audio_file_url fails, keep the original value
-            pass
+            # If getting audio_file_url fails, just add None
+            ret['audio_file_url'] = None
         return ret
     
     def validate_duration(self, value):
