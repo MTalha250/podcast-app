@@ -194,7 +194,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def recent(self, request):
         episodes = self.get_queryset()[:10]
-        serializer = self.get_serializer(episodes, many=True)
+        serializer = EpisodeListSerializer(episodes, many=True)
         return Response(serializer.data)
 
 

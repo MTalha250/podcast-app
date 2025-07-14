@@ -67,18 +67,30 @@ class Episode(models.Model):
     def audio_file_url(self):
         """Get the correct URL for the audio file"""
         if self.audio_file and self.audio_file.name:
-            # Check if this is an audio file
-            file_name = str(self.audio_file.name)
-            file_ext = file_name.lower().split('.')[-1] if '.' in file_name else ''
-            audio_extensions = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'wma']
-            
-            if file_ext in audio_extensions:
-                # Return raw URL for audio files
-                import cloudinary
-                cloud_name = cloudinary.config().cloud_name
-                return f"https://res.cloudinary.com/{cloud_name}/raw/upload/v1/{file_name}"
-            else:
-                return self.audio_file.url
+            try:
+                # Check if this is an audio file
+                file_name = str(self.audio_file.name)
+                file_ext = file_name.lower().split('.')[-1] if '.' in file_name else ''
+                audio_extensions = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'wma']
+                
+                if file_ext in audio_extensions:
+                    # Return raw URL for audio files
+                    import cloudinary
+                    try:
+                        cloud_name = cloudinary.config().cloud_name
+                        if cloud_name:
+                            return f"https://res.cloudinary.com/{cloud_name}/raw/upload/v1/{file_name}"
+                    except (AttributeError, TypeError):
+                        # Fallback to hardcoded cloud name if config fails
+                        return f"https://res.cloudinary.com/dewqsghdi/raw/upload/v1/{file_name}"
+                else:
+                    return self.audio_file.url
+            except Exception:
+                # If anything fails, try to return the regular file URL
+                try:
+                    return self.audio_file.url
+                except:
+                    pass
         return None
     
     def __str__(self):
