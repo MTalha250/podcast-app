@@ -21,5 +21,5 @@ urlpatterns = [
     path('trending/', views.trending, name='trending'),
     path('profile/', views.UserProfileView.as_view(), name='user-profile'),
     path('stats/', views.user_stats, name='user-stats'),
-    path('test-audio-upload/', views.test_audio_upload, name='test-audio-upload'),
+
 ]
