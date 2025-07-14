@@ -4,6 +4,7 @@ import "./globals.css";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "@/store/authStore";
+import useThemeStore from "@/store/themeStore";
 import Header from "@/components/Header";
 import AudioPlayer from "@/components/AudioPlayer";
 
@@ -23,16 +24,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const { initializeAuth } = useAuthStore();
+  const { initializeTheme } = useThemeStore();
 
   useEffect(() => {
     // Initialize auth from localStorage
     initializeAuth();
-  }, [initializeAuth]);
+    // Initialize theme system
+    initializeTheme();
+  }, [initializeAuth, initializeTheme]);
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-background via-background to-card`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-background via-background to-card transition-colors duration-300`}
       >
         <div className="min-h-screen flex flex-col relative">
           {/* Animated background elements */}
@@ -58,29 +62,23 @@ export default function RootLayout({
             position="top-right"
             toastOptions={{
               duration: 4000,
+              className:
+                "dark:bg-card/95 dark:text-foreground dark:border-white/10 bg-white text-foreground border-border",
               style: {
-                background: "rgba(26, 26, 35, 0.95)",
-                color: "#f8fafc",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "0.75rem",
                 fontSize: "14px",
                 backdropFilter: "blur(20px)",
-                boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+                boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.1)",
               },
               success: {
                 iconTheme: {
                   primary: "#10b981",
                   secondary: "#ffffff",
                 },
+                className: "dark:border-green-500/30 border-green-500/20",
                 style: {
-                  background: "rgba(26, 26, 35, 0.95)",
-                  color: "#f8fafc",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
-                  borderRadius: "0.75rem",
-                  fontSize: "14px",
-                  backdropFilter: "blur(20px)",
                   boxShadow:
-                    "0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 20px rgba(16, 185, 129, 0.1)",
+                    "0 8px 32px 0 rgba(0, 0, 0, 0.1), 0 0 20px rgba(16, 185, 129, 0.1)",
                 },
               },
               error: {
@@ -88,15 +86,10 @@ export default function RootLayout({
                   primary: "#ef4444",
                   secondary: "#ffffff",
                 },
+                className: "dark:border-red-500/30 border-red-500/20",
                 style: {
-                  background: "rgba(26, 26, 35, 0.95)",
-                  color: "#f8fafc",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                  borderRadius: "0.75rem",
-                  fontSize: "14px",
-                  backdropFilter: "blur(20px)",
                   boxShadow:
-                    "0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 20px rgba(239, 68, 68, 0.1)",
+                    "0 8px 32px 0 rgba(0, 0, 0, 0.1), 0 0 20px rgba(239, 68, 68, 0.1)",
                 },
               },
               loading: {
@@ -104,15 +97,10 @@ export default function RootLayout({
                   primary: "#8b5cf6",
                   secondary: "#ffffff",
                 },
+                className: "dark:border-purple-500/30 border-purple-500/20",
                 style: {
-                  background: "rgba(26, 26, 35, 0.95)",
-                  color: "#f8fafc",
-                  border: "1px solid rgba(139, 92, 246, 0.3)",
-                  borderRadius: "0.75rem",
-                  fontSize: "14px",
-                  backdropFilter: "blur(20px)",
                   boxShadow:
-                    "0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 20px rgba(139, 92, 246, 0.1)",
+                    "0 8px 32px 0 rgba(0, 0, 0, 0.1), 0 0 20px rgba(139, 92, 246, 0.1)",
                 },
               },
             }}

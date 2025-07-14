@@ -1,43 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
-  Search,
   User,
   LogOut,
   Music,
-  Home,
-  Heart,
-  Play,
   Sparkles,
+  Search,
+  TrendingUp,
+  Heart,
+  List,
+  Compass,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import useAuthStore from "@/store/authStore";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Header() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const { user, isAuthenticated, logout } = useAuthStore();
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setShowUserMenu(false);
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    setShowUserMenu(false);
-    router.push("/");
-  };
-
   return (
-    <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-white/10">
+    <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-white/10 dark:border-white/10 border-border/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -64,69 +79,79 @@ export default function Header() {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-5">
+          <nav className="hidden lg:flex items-center space-x-1">
             <Link
               href="/"
-              className="relative text-foreground hover:text-purple-400 transition-all duration-300 font-medium group px-3 py-2"
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                pathname === "/"
+                  ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-400 border border-purple-500/30"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/10"
+              }`}
             >
-              <span className="relative z-10">Home</span>
-              <div className="absolute inset-0 bg-purple-500/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
+              <Home className="h-4 w-4" />
+              <span>Home</span>
             </Link>
-
             <Link
               href="/discover"
-              className="relative text-foreground hover:text-purple-400 transition-all duration-300 font-medium group px-3 py-2"
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                pathname === "/discover"
+                  ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-400 border border-purple-500/30"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/10"
+              }`}
             >
-              <span className="relative z-10">Discover</span>
-              <div className="absolute inset-0 bg-purple-500/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
+              <Compass className="h-4 w-4" />
+              <span>Discover</span>
             </Link>
-
+            <Link
+              href="/search"
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                pathname === "/search"
+                  ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-400 border border-purple-500/30"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/10"
+              }`}
+            >
+              <Search className="h-4 w-4" />
+              <span>Search</span>
+            </Link>
             {isAuthenticated && (
               <>
                 <Link
                   href="/subscriptions"
-                  className="relative text-foreground hover:text-purple-400 transition-all duration-300 font-medium group px-3 py-2"
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    pathname === "/subscriptions"
+                      ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-400 border border-purple-500/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/10"
+                  }`}
                 >
-                  <span className="relative z-10">My Library</span>
-                  <div className="absolute inset-0 bg-purple-500/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
+                  <Heart className="h-4 w-4" />
+                  <span>Subscriptions</span>
                 </Link>
-
                 <Link
                   href="/playlists"
-                  className="relative text-foreground hover:text-purple-400 transition-all duration-300 font-medium group px-3 py-2"
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    pathname === "/playlists"
+                      ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-400 border border-purple-500/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/10"
+                  }`}
                 >
-                  <span className="relative z-10">Playlists</span>
-                  <div className="absolute inset-0 bg-purple-500/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
+                  <List className="h-4 w-4" />
+                  <span>Playlists</span>
                 </Link>
               </>
             )}
           </nav>
 
-          {/* Search */}
-          <div className="flex-1 max-w-md mx-8">
-            <form onSubmit={handleSearch} className="relative group">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-purple-400 transition-colors" />
-                <Input
-                  type="text"
-                  placeholder="Search podcasts, episodes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-4 h-12 bg-card/50 backdrop-blur-sm border-white/10 text-foreground placeholder-muted-foreground focus:border-purple-500 focus:ring-purple-500/20 rounded-full transition-all duration-300 focus:bg-card/80"
-                />
-              </div>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-xl" />
-            </form>
-          </div>
-
-          {/* Auth Section */}
+          {/* Right Section */}
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <ThemeToggle variant="button" />
+
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <Button
                   variant="ghost"
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-3 h-12 px-4 bg-card/50 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-full"
+                  className="flex items-center space-x-3 h-12 px-4 bg-card/50 backdrop-blur-sm border border-white/10 dark:border-white/10 border-border/20 hover:bg-white/10 transition-all duration-300 rounded-full"
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
                     <User className="h-4 w-4 text-white" />
@@ -138,8 +163,8 @@ export default function Header() {
 
                 {/* User Menu Dropdown */}
                 {showUserMenu && (
-                  <div className="absolute right-0 top-full mt-2 bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-20 min-w-[240px] overflow-hidden">
-                    <div className="p-4 border-b border-white/10">
+                  <div className="absolute right-0 top-full mt-2 bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/10 border-border/20 rounded-xl shadow-2xl z-20 min-w-[240px] overflow-hidden">
+                    <div className="p-4 border-b border-white/10 dark:border-white/10 border-border/20">
                       <p className="text-sm font-semibold text-foreground">
                         {user?.first_name} {user?.last_name}
                       </p>
@@ -162,75 +187,21 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-3">
-                <Link href="/auth/login">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-foreground hover:text-purple-400 hover:bg-white/10 transition-all duration-300 h-10 px-6 rounded-full"
-                  >
-                    Sign In
-                  </Button>
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Sign In
                 </Link>
-                <Link href="/auth/register">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 hover:scale-105 transition-all duration-300 h-10 px-6 rounded-full font-medium"
-                  >
-                    Get Started
-                  </Button>
+                <Link
+                  href="/auth/register"
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 hover:scale-105"
+                >
+                  Get Started
                 </Link>
               </div>
             )}
           </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden border-t border-white/10 py-3">
-          <nav className="flex items-center justify-around">
-            <Link
-              href="/"
-              className="flex flex-col items-center space-y-1 text-muted-foreground hover:text-purple-400 transition-colors group"
-            >
-              <div className="p-2 rounded-lg group-hover:bg-purple-500/10 transition-colors">
-                <Home className="h-4 w-4" />
-              </div>
-              <span className="text-xs font-medium">Home</span>
-            </Link>
-
-            <Link
-              href="/discover"
-              className="flex flex-col items-center space-y-1 text-muted-foreground hover:text-purple-400 transition-colors group"
-            >
-              <div className="p-2 rounded-lg group-hover:bg-purple-500/10 transition-colors">
-                <Search className="h-4 w-4" />
-              </div>
-              <span className="text-xs font-medium">Discover</span>
-            </Link>
-
-            {isAuthenticated && (
-              <>
-                <Link
-                  href="/subscriptions"
-                  className="flex flex-col items-center space-y-1 text-muted-foreground hover:text-purple-400 transition-colors group"
-                >
-                  <div className="p-2 rounded-lg group-hover:bg-purple-500/10 transition-colors">
-                    <Heart className="h-4 w-4" />
-                  </div>
-                  <span className="text-xs font-medium">Library</span>
-                </Link>
-
-                <Link
-                  href="/playlists"
-                  className="flex flex-col items-center space-y-1 text-muted-foreground hover:text-purple-400 transition-colors group"
-                >
-                  <div className="p-2 rounded-lg group-hover:bg-purple-500/10 transition-colors">
-                    <Play className="h-4 w-4" />
-                  </div>
-                  <span className="text-xs font-medium">Playlists</span>
-                </Link>
-              </>
-            )}
-          </nav>
         </div>
       </div>
     </header>
