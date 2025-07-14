@@ -153,6 +153,9 @@ CLOUDINARY_STORAGE = {
     'STATICFILES_MANIFEST_ROOT': os.path.join(BASE_DIR, 'staticfiles'),
     'STATIC_TAG': True,
     'INVALIDATE': True,
+    'RESOURCE_TYPE': 'auto',  # Auto-detect file types including audio
+    'FORMAT': None,  # Don't force format conversion
+    'TRANSFORMATION': {},  # No transformations for audio files
 }
 
 # Django 4.2+ STORAGES setting

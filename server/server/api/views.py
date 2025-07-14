@@ -303,3 +303,62 @@ def user_stats(request):
     }
     
     return Response(stats)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def test_audio_upload(request):
+    """
+    Test endpoint for direct audio upload to Cloudinary
+    This bypasses Django's file storage to test if Cloudinary upload works
+    """
+    try:
+        if 'audio_file' not in request.FILES:
+            return Response(
+                {'error': 'No audio file provided'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        audio_file = request.FILES['audio_file']
+        
+        # Check file size (max 10MB for testing)
+        if audio_file.size > 10 * 1024 * 1024:
+            return Response(
+                {'error': 'File too large (max 10MB)'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Direct upload to Cloudinary
+        import cloudinary.uploader
+        
+        try:
+            result = cloudinary.uploader.upload(
+                audio_file,
+                folder="episodes",
+                resource_type="auto",  # Let Cloudinary detect file type
+                use_filename=True,
+                unique_filename=True,
+                overwrite=False
+            )
+            
+            return Response({
+                'success': True,
+                'message': 'Audio file uploaded successfully!',
+                'url': result.get('secure_url'),
+                'public_id': result.get('public_id'),
+                'resource_type': result.get('resource_type'),
+                'format': result.get('format'),
+                'bytes': result.get('bytes')
+            })
+            
+        except Exception as cloudinary_error:
+            return Response(
+                {'error': f'Cloudinary upload failed: {str(cloudinary_error)}'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
+    except Exception as e:
+        return Response(
+            {'error': f'Upload failed: {str(e)}'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
