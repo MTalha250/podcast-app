@@ -182,10 +182,7 @@ export default function DiscoverPage() {
                         <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-white/5">
                           {podcast.cover_image ? (
                             <img
-                              src={
-                                process.env.NEXT_PUBLIC_IMAGE_URL +
-                                podcast.cover_image
-                              }
+                              src={podcast.cover_image}
                               alt={podcast.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
@@ -296,10 +293,7 @@ export default function DiscoverPage() {
                         <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-white/5">
                           {podcast.cover_image ? (
                             <img
-                              src={
-                                process.env.NEXT_PUBLIC_IMAGE_URL +
-                                podcast.cover_image
-                              }
+                              src={podcast.cover_image}
                               alt={podcast.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
@@ -342,10 +336,7 @@ export default function DiscoverPage() {
                           <div className="w-16 h-16 bg-white/5 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
                             {podcast.cover_image ? (
                               <img
-                                src={
-                                  process.env.NEXT_PUBLIC_IMAGE_URL +
-                                  podcast.cover_image
-                                }
+                                src={podcast.cover_image}
                                 alt={podcast.title}
                                 className="w-full h-full object-cover rounded group-hover:scale-110 transition-transform duration-300"
                               />

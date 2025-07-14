@@ -183,10 +183,7 @@ export default function HomePage() {
                         <div className="aspect-square relative mb-4 overflow-hidden rounded-xl">
                           {podcast.cover_image ? (
                             <img
-                              src={
-                                process.env.NEXT_PUBLIC_IMAGE_URL +
-                                podcast.cover_image
-                              }
+                              src={podcast.cover_image}
                               alt={podcast.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             />
