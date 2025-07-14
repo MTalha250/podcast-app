@@ -21,4 +21,6 @@ urlpatterns = [
     path('trending/', views.trending, name='trending'),
     path('profile/', views.UserProfileView.as_view(), name='user-profile'),
     path('stats/', views.user_stats, name='user-stats'),
+    path('upload-signature/', views.get_upload_signature, name='upload-signature'),
+    path('upload/', views.upload_page, name='upload-page'),
 ]
