@@ -66,32 +66,43 @@ class Episode(models.Model):
     @property
     def audio_file_url(self):
         """Get the correct URL for the audio file"""
-        if self.audio_file and self.audio_file.name:
-            try:
-                # Check if this is an audio file
-                file_name = str(self.audio_file.name)
-                file_ext = file_name.lower().split('.')[-1] if '.' in file_name else ''
-                audio_extensions = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'wma']
+        try:
+            if not (self.audio_file and self.audio_file.name):
+                return None
                 
-                if file_ext in audio_extensions:
-                    # Return raw URL for audio files
+            file_name = str(self.audio_file.name)
+            if not file_name:
+                return None
+                
+            # Check if this is an audio file
+            file_ext = file_name.lower().split('.')[-1] if '.' in file_name else ''
+            audio_extensions = ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'wma']
+            
+            if file_ext in audio_extensions:
+                # Try to get cloud name from config, with multiple fallbacks
+                cloud_name = None
+                try:
                     import cloudinary
-                    try:
-                        cloud_name = cloudinary.config().cloud_name
-                        if cloud_name:
-                            return f"https://res.cloudinary.com/{cloud_name}/raw/upload/v1/{file_name}"
-                    except (AttributeError, TypeError):
-                        # Fallback to hardcoded cloud name if config fails
-                        return f"https://res.cloudinary.com/dewqsghdi/raw/upload/v1/{file_name}"
-                else:
-                    return self.audio_file.url
-            except Exception:
-                # If anything fails, try to return the regular file URL
+                    config = cloudinary.config()
+                    cloud_name = getattr(config, 'cloud_name', None)
+                except:
+                    pass
+                
+                # Use hardcoded cloud name if config fails
+                if not cloud_name:
+                    cloud_name = 'dewqsghdi'
+                
+                return f"https://res.cloudinary.com/{cloud_name}/raw/upload/v1/{file_name}"
+            else:
+                # For non-audio files, try to get the regular URL
                 try:
                     return self.audio_file.url
                 except:
-                    pass
-        return None
+                    return None
+                    
+        except Exception:
+            # Ultimate fallback - return None if anything fails
+            return None
     
     def __str__(self):
         return self.title

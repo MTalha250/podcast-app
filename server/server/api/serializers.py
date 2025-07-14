@@ -49,9 +49,14 @@ class EpisodeSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         """Override representation to use correct audio URL"""
         ret = super().to_representation(instance)
-        # Replace audio_file with the correct URL
-        if instance.audio_file_url:
-            ret['audio_file'] = instance.audio_file_url
+        try:
+            # Replace audio_file with the correct URL if available
+            audio_url = instance.audio_file_url
+            if audio_url:
+                ret['audio_file'] = audio_url
+        except Exception:
+            # If getting audio_file_url fails, keep the original value
+            pass
         return ret
     
     def validate_duration(self, value):
